@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Persamaan Garis Lurus Kuliner Palembang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fef3c7;
+            background-image: radial-gradient(#f59e0b 0.75px, transparent 0.75px), radial-gradient(#f59e0b 0.75px, #fef3c7 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka One', cursive;
+        }
+        .btn-game {
+            transition: all 0.2s ease;
+        }
+        .btn-game:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .btn-game:active {
+            transform: translateY(1px);
+        }
+        .modal-bg {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        canvas {
+            touch-action: none;
+        }
+        @keyframes pulse-beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .music-active {
+            animation: pulse-beat 0.8s infinite;
+        }
+    </style>
+</head>
+<body class="h-screen w-full overflow-hidden flex items-center justify-center text-gray-800">
+
+    <div id="game-container" class="relative w-full max-w-5xl h-[95vh] md:h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border-4 border-amber-500">
+        
+        <!-- Header Bar -->
+        <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 p-4 text-white flex justify-between items-center shadow-md z-10">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goHome()">
+                <div class="bg-white text-orange-600 p-2 rounded-xl shadow-inner font-heading text-xl">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-2xl tracking-wide">Misi Garis Lurus Wong Kito</h1>
+                    <p class="text-xs text-amber-200">Matematika Kelas 9 SMP - Kuliner Palembang</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 md:gap-3 font-heading text-xs md:text-sm">
+                <!-- Music Toggle Button -->
+                <button id="music-toggle-btn" onclick="toggleMusic()" class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1.5 rounded-xl transition shadow flex items-center gap-2">
+                    <i id="music-icon" class="fas fa-music"></i> <span id="music-status">Musik Palembang: OFF</span>
+                </button>
+                
+                <div class="bg-white text-amber-600 px-3 md:px-4 py-1.5 rounded-full shadow-inner flex items-center gap-2">
+                    <i class="fas fa-star text-yellow-500"></i>
+                    <span id="score-display">0</span>
+                </div>
+                
+                <button onclick="goHome()" class="bg-orange-700 hover:bg-orange-800 text-white px-3 py-1.5 rounded-xl transition shadow">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area" class="flex-grow relative overflow-hidden bg-amber-50 flex flex-col">
+            
+            <!-- SCREEN: MENU UTAMA -->
+            <div id="screen-menu" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center h-full w-full overflow-y-auto">
+                <div class="max-w-3xl w-full">
+                    <div class="inline-block bg-orange-100 text-orange-700 px-4 py-1.5 rounded-full font-bold text-sm mb-3 border border-orange-300">
+                        📍 Kurikulum Merdeka Kelas 9 SMP
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-heading text-amber-900 mb-2 drop-shadow-sm">Jalur Pengiriman Kuliner Palembang</h2>
+                    <p class="text-gray-600 mb-6 max-w-xl mx-auto text-sm md:text-base">Bantu kurir mengantar makanan khas Palembang (Pempek, Tekwan, Pindang, Mie Celor) melintasi rute koordinat Jembatan Ampera!</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-6">
+                        <button onclick="openNamePrompt(1)" class="btn-game bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-4 border-b-4 border-amber-700 text-left">
+                            <div class="text-3xl bg-white/20 p-3 rounded-xl">📐</div>
+                            <div>
+                                <h3 class="font-heading text-lg">Misi 1: Menentukan Gradien (m)</h3>
+                                <p class="text-xs text-amber-100">Hitung kemiringan jalan menuju warung Pempek.</p>
+                            </div>
+                        </button>
+                        
+                        <button onclick="openNamePrompt(2)" class="btn-game bg-gradient-to-br from-orange-500 to-red-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-4 border-b-4 border-orange-700 text-left">
+                            <div class="text-3xl bg-white/20 p-3 rounded-xl">📝</div>
+                            <div>
+                                <h3 class="font-heading text-lg">Misi 2: Persamaan Garis (y = mx + c)</h3>
+                                <p class="text-xs text-orange-100">Susun persamaan jalur pengiriman Tekwan & Pindang.</p>
+                            </div>
+                        </button>
+                        
+                        <button onclick="openNamePrompt(3)" class="btn-game bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-4 border-b-4 border-emerald-700 text-left">
+                            <div class="text-3xl bg-white/20 p-3 rounded-xl">🌉</div>
+                            <div>
+                                <h3 class="font-heading text-lg">Misi 3: Garis Sejajar & Tegak Lurus</h3>
+                                <p class="text-xs text-emerald-100">Tentukan jalur Jembatan Ampera yang aman.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="openNamePrompt(4)" class="btn-game bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-4 border-b-4 border-purple-700 text-left">
+                            <div class="text-3xl bg-white/20 p-3 rounded-xl">🍜</div>
+                            <div>
+                                <h3 class="font-heading text-lg">Misi 4: Tantangan Bebas (Boss Level)</h3>
+                                <p class="text-xs text-purple-100">Gabungan semua konsep persamaan garis kuliner!</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="showLeaderboard()" class="btn-game bg-white border-2 border-amber-500 text-amber-900 font-heading px-6 py-3 rounded-2xl shadow hover:bg-amber-100 transition flex items-center justify-center gap-2 text-base">
+                            <i class="fas fa-trophy text-amber-500 text-xl"></i> Papan Peringkat Siswa
+                        </button>
+                        
+                        <button onclick="shareGameWA()" class="btn-game bg-emerald-600 hover:bg-emerald-700 text-white font-heading px-6 py-3 rounded-2xl shadow transition flex items-center justify-center gap-2 text-base">
+                            <i class="fab fa-whatsapp text-xl"></i> Bagikan ke WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN: PERMAINAN -->
+            <div id="screen-game" class="absolute inset-0 hidden flex-col md:flex-row h-full w-full">
+                <!-- Left Panel: Canvas & Visual Map -->
+                <div class="w-full md:w-3/5 h-1/2 md:h-full bg-white relative flex flex-col border-b md:border-b-0 md:border-r border-amber-200">
+                    <div class="absolute top-3 left-3 bg-amber-100/90 backdrop-blur px-3 py-1.5 rounded-xl border border-amber-300 text-xs font-bold text-amber-900 z-10 shadow-sm flex items-center gap-2">
+                        <span id="mission-badge" class="bg-amber-600 text-white px-2 py-0.5 rounded">Misi 1</span>
+                        <span id="player-tag" class="text-xs text-gray-600 font-normal">Siswa: -</span>
+                    </div>
+                    <div class="flex-grow relative flex items-center justify-center p-2">
+                        <canvas id="coord-canvas" class="w-full h-full rounded-xl bg-amber-50/50 border border-amber-200 shadow-inner"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Question & Options -->
+                <div class="w-full md:w-2/5 h-1/2 md:h-full bg-amber-50 p-4 md:p-6 flex flex-col justify-between overflow-y-auto">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div id="food-icon" class="text-3xl bg-white p-2 rounded-2xl shadow border border-amber-200">🥟</div>
+                            <div>
+                                <h4 id="problem-subtitle" class="font-bold text-amber-900 text-sm">Warung Pempek Pak Raden</h4>
+                                <p class="text-xs text-gray-500">Pilih rute koordinat yang paling benar</p>
+                            </div>
+                        </div>
+
+                        <!-- Story / Question Box -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-amber-200 mb-4">
+                            <p id="story-text" class="text-sm md:text-base text-gray-700 leading-relaxed">
+                                Kurir melaju dari titik A(-2, 1) menuju warung Pempek di titik B(4, 7). Berapakah gradien (kemiringan) jalur perjalanan kurir ini?
+                            </p>
+                        </div>
+
+                        <!-- Options area -->
+                        <div id="control-area" class="space-y-3">
+                            <!-- Options dynamically inserted -->
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-amber-200 flex justify-between items-center">
+                        <span class="text-xs text-amber-800 font-semibold" id="progress-indicator">Soal 1 dari 5</span>
+                        <button id="submit-btn" onclick="checkAnswer()" class="btn-game bg-amber-600 hover:bg-amber-700 text-white px-6 py-2.5 rounded-xl font-heading shadow-md">
+                            Kirim Jawaban <i class="fas fa-paper-plane ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN: PAPAN PERINGKAT SISWA -->
+            <div id="screen-leaderboard" class="absolute inset-0 hidden flex-col items-center justify-center p-6 text-center h-full w-full bg-amber-50 overflow-y-auto">
+                <div class="max-w-3xl w-full bg-white p-6 rounded-3xl shadow-xl border-2 border-amber-300">
+                    <div class="flex items-center justify-between border-b pb-4 mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-trophy text-3xl text-yellow-500"></i>
+                            <h2 class="font-heading text-2xl text-amber-900">Papan Peringkat Siswa</h2>
+                        </div>
+                        <button onclick="goHome()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-gray-500 mb-4 text-left">Pantau perolehan nilai siswa. Guru dapat mengunduh rekap nilai ke format Excel/CSV atau menghapus data menggunakan PIN Guru.</p>
+
+                    <div class="overflow-x-auto max-h-72 overflow-y-auto rounded-xl border border-amber-100 mb-4">
+                        <table class="w-full text-sm text-left text-gray-700">
+                            <thead class="text-xs uppercase bg-amber-100 text-amber-800 font-heading sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-3">#</th>
+                                    <th class="px-4 py-3">Nama Siswa</th>
+                                    <th class="px-4 py-3">Kelas</th>
+                                    <th class="px-4 py-3">Misi</th>
+                                    <th class="px-4 py-3">Tanggal</th>
+                                    <th class="px-4 py-3 text-right">Skor (Nilai)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <!-- Dynamic leaderboard rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-t pt-3">
+                        <div class="flex gap-2">
+                            <button onclick="exportToCSV()" class="btn-game bg-emerald-600 hover:bg-emerald-700 text-white font-heading text-xs px-4 py-2 rounded-xl shadow flex items-center gap-1.5">
+                                <i class="fas fa-file-excel"></i> Ekspor ke Excel/CSV
+                            </button>
+                            <button onclick="promptClearLeaderboard()" class="btn-game bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-300 font-heading text-xs px-3 py-2 rounded-xl flex items-center gap-1.5">
+                                <i class="fas fa-lock"></i> Reset Data (Guru)
+                            </button>
+                        </div>
+                        <button onclick="goHome()" class="btn-game bg-amber-600 text-white font-heading px-6 py-2 rounded-xl text-sm">
+                            Kembali ke Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: INPUT PASSWORD GURU -->
+    <div id="modal-teacher-pass" class="fixed inset-0 modal-bg hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl flex flex-col w-full max-w-sm border-4 border-amber-500 m-4 text-center">
+            <div class="text-4xl mb-2">🔑</div>
+            <h3 class="font-heading text-xl text-amber-900 mb-1">Verifikasi Guru</h3>
+            <p class="text-xs text-gray-500 mb-4">Masukkan Kode PIN Guru untuk menghapus rekap nilai (PIN Default: <b>1234</b>)</p>
+            
+            <input type="password" id="teacher-pin-input" placeholder="Masukkan 4 angka PIN" maxlength="10" class="w-full text-center tracking-widest text-lg font-bold p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none mb-4">
+            
+            <div class="flex gap-2">
+                <button onclick="closeTeacherModal()" class="btn-game flex-1 bg-gray-200 text-gray-700 font-heading py-2.5 rounded-xl text-sm">
+                    Batal
+                </button>
+                <button onclick="verifyTeacherPin()" class="btn-game flex-1 bg-rose-600 text-white font-heading py-2.5 rounded-xl shadow text-sm">
+                    Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NOTIFIKASI -->
+    <div id="modal-notification" class="fixed inset-0 modal-bg hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl flex flex-col w-full max-w-sm border-4 border-amber-400 m-4 text-center">
+            <div id="notif-icon" class="text-4xl mb-2">⚠️</div>
+            <h3 id="notif-title" class="font-heading text-xl text-amber-900 mb-2">Perhatian</h3>
+            <p id="notif-message" class="text-sm text-gray-600 mb-5">Pesan pemberitahuan...</p>
+            <button onclick="closeNotification()" class="btn-game bg-amber-600 text-white font-heading py-2.5 rounded-xl shadow">
+                OK, Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: DATA DIRI SISWA -->
+    <div id="modal-player" class="fixed inset-0 modal-bg hidden items-center justify-center z-50">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col w-full max-w-md border-4 border-amber-400 m-4">
+            <div class="text-center mb-4">
+                <div class="text-5xl mb-2">🛵</div>
+                <h3 class="font-heading text-2xl text-amber-900">Data Diri Siswa</h3>
+                <p class="text-xs text-gray-500">Masukkan Nama dan Kelas untuk memulai ujian Misi Garis Lurus</p>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap Siswa:</label>
+                    <input type="text" id="player-name" placeholder="Contoh: Muhammad Banyu" class="w-full p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Kelas / No. Absen:</label>
+                    <input type="text" id="player-class" placeholder="Contoh: IX.1 / Absen 12" class="w-full p-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none text-sm">
+                </div>
+            </div>
+
+            <button onclick="confirmStartMission()" class="btn-game w-full bg-amber-600 hover:bg-amber-700 text-white font-heading py-3 rounded-xl shadow-lg">
+                Mulai Misi Soal <i class="fas fa-play ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: HASIL EVALUASI -->
+    <div id="modal-summary" class="fixed inset-0 modal-bg hidden items-center justify-center z-50">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col w-full max-w-lg border-4 border-amber-500 m-4 text-center max-h-[90vh] overflow-y-auto">
+            <div class="text-5xl mb-2">🏁</div>
+            <h2 class="font-heading text-3xl text-amber-900 mb-1">Misi Selesai!</h2>
+            <p class="text-xs text-gray-500 mb-4">Hasil Evaluasi Pengiriman Kuliner Wong Kito</p>
+
+            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 mb-4 flex justify-around items-center">
+                <div>
+                    <p class="text-xs text-gray-500">Siswa</p>
+                    <p id="summary-name" class="font-bold text-amber-900 text-sm">-</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500">Total Skor (Nilai)</p>
+                    <p id="summary-score" class="font-heading text-3xl text-emerald-600">0</p>
+                </div>
+            </div>
+
+            <div class="text-left mb-6">
+                <h4 class="font-bold text-xs uppercase text-amber-800 mb-2">Rincian Jawaban Soal:</h4>
+                <div id="summary-details" class="space-y-2 text-xs">
+                    <!-- Dynamic review -->
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="showLeaderboard()" class="btn-game flex-1 bg-white border border-amber-500 text-amber-800 font-heading py-2.5 rounded-xl">
+                    <i class="fas fa-trophy text-amber-500"></i> Peringkat
+                </button>
+                <button onclick="goHome()" class="btn-game flex-1 bg-amber-600 hover:bg-amber-700 text-white font-heading py-2.5 rounded-xl shadow">
+                    Menu Utama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TEACHER_PIN = "1234";
+
+        function showNotification(title, message, icon = "⚠️") {
+            document.getElementById('notif-title').innerText = title;
+            document.getElementById('notif-message').innerText = message;
+            document.getElementById('notif-icon').innerText = icon;
+            document.getElementById('modal-notification').classList.remove('hidden');
+            document.getElementById('modal-notification').classList.add('flex');
+        }
+
+        function closeNotification() {
+            document.getElementById('modal-notification').classList.add('hidden');
+            document.getElementById('modal-notification').classList.remove('flex');
+        }
+
+        function shareGameWA() {
+            const currentUrl = window.location.href;
+            const text = encodeURIComponent(`Ayo mainkan Game Matematika "Petualangan Persamaan Garis Lurus Kuliner Palembang" di link berikut:\n\n${currentUrl}`);
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        let currentMission = 1;
+        let currentScore = 0;
+        let questionIndex = 0;
+        const totalQuestionsPerMission = 5;
+        let currentProblemData = null;
+        let playerName = "Siswa Noname";
+        let playerClass = "IX";
+        let missionAnswers = [];
+
+        const LOCAL_STORAGE_KEY = "palembang_math_leaderboard_v1";
+
+        const canvas = document.getElementById('coord-canvas');
+        const ctx = canvas.getContext('2d');
+        let scale = 25; 
+        let originX = 0;
+        let originY = 0;
+
+        const culinaryThemes = [
+            { name: "Pempek Pak Raden", emoji: "🥟" },
+            { name: "Tekwan Demang", emoji: "🥣" },
+            { name: "Pindang Patin Jakabaring", emoji: "🍲" },
+            { name: "Mie Celor 26 Ilir", emoji: "🍜" },
+            { name: "Martabak HAR", emoji: "🥞" }
+        ];
+
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicInterval = null;
+
+        const cukMakMelody = [
+            261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 329.63,
+            349.23, 440.00, 523.25, 440.00, 349.23, 329.63, 293.66, 329.63,
+            392.00, 493.88, 587.33, 523.25, 493.88, 392.00, 329.63, 261.63
+        ];
+        let noteStep = 0;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playCukMakNote(freq, duration = 0.22, isBeat = false) {
+            if (!audioCtx || audioCtx.state !== 'running') return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+
+                if (isBeat) {
+                    const kick = audioCtx.createOscillator();
+                    const kickGain = audioCtx.createGain();
+                    kick.type = 'sine';
+                    kick.frequency.setValueAtTime(120, audioCtx.currentTime);
+                    kick.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.1);
+                    
+                    kickGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    kickGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+
+                    kick.connect(kickGain);
+                    kickGain.connect(audioCtx.destination);
+                    kick.start();
+                    kick.stop(audioCtx.currentTime + 0.1);
+                }
+            } catch(e) {
+                console.error("Audio error", e);
+            }
+        }
+
+        function toggleMusic() {
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isMusicPlaying = !isMusicPlaying;
+            const statusEl = document.getElementById('music-status');
+            const btnEl = document.getElementById('music-toggle-btn');
+
+            if (isMusicPlaying) {
+                statusEl.innerText = "Musik Palembang: ON 🎶";
+                btnEl.classList.add('music-active', 'bg-red-600');
+                musicInterval = setInterval(() => {
+                    const freq = cukMakMelody[noteStep];
+                    playCukMakNote(freq, 0.22, noteStep % 2 === 0);
+                    noteStep = (noteStep + 1) % cukMakMelody.length;
+                }, 250);
+            } else {
+                statusEl.innerText = "Musik Palembang: OFF";
+                btnEl.classList.remove('music-active', 'bg-red-600');
+                clearInterval(musicInterval);
+            }
+        }
+
+        function resizeCanvas() {
+            if (!canvas.parentElement) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 16;
+            canvas.height = rect.height - 16;
+            originX = canvas.width / 2;
+            originY = canvas.height / 2;
+            if (currentProblemData) {
+                drawCartesianPlane(currentProblemData.customLine, currentProblemData.points);
+            } else {
+                drawCartesianPlane();
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function mathToCanvasX(x) { return originX + x * scale; }
+        function mathToCanvasY(y) { return originY - y * scale; }
+
+        function drawCartesianPlane(customLine = null, points = []) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#fde68a';
+            ctx.lineWidth = 1;
+
+            const minX = Math.floor(-originX / scale);
+            const maxX = Math.ceil((canvas.width - originX) / scale);
+            const minY = Math.floor(-originY / scale);
+            const maxY = Math.ceil((canvas.height - originY) / scale);
+
+            for (let x = minX; x <= maxX; x++) {
+                ctx.beginPath();
+                ctx.moveTo(mathToCanvasX(x), 0);
+                ctx.lineTo(mathToCanvasX(x), canvas.height);
+                ctx.stroke();
+            }
+
+            for (let y = minY; y <= maxY; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, mathToCanvasY(y));
+                ctx.lineTo(canvas.width, mathToCanvasY(y));
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            ctx.stroke();
+
+            ctx.fillStyle = '#b45309';
+            ctx.font = '10px Nunito';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            for (let x = -10; x <= 10; x += 2) {
+                if (x !== 0) {
+                    const cx = mathToCanvasX(x);
+                    if (cx > 0 && cx < canvas.width) ctx.fillText(x, cx, originY + 4);
+                }
+            }
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let y = -10; y <= 10; y += 2) {
+                if (y !== 0) {
+                    const cy = mathToCanvasY(y);
+                    if (cy > 0 && cy < canvas.height) ctx.fillText(y, originX - 6, cy);
+                }
+            }
+
+            if (customLine) {
+                ctx.strokeStyle = '#ea580c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                let startX = -15;
+                let startY = customLine.m * startX + customLine.c;
+                ctx.moveTo(mathToCanvasX(startX), mathToCanvasY(startY));
+
+                let endX = 15;
+                let endY = customLine.m * endX + customLine.c;
+                ctx.lineTo(mathToCanvasX(endX), mathToCanvasY(endY));
+                ctx.stroke();
+            }
+
+            if (points && points.length > 0) {
+                points.forEach((p) => {
+                    const cx = mathToCanvasX(p.x);
+                    const cy = mathToCanvasY(p.y);
+
+                    ctx.fillStyle = p.color || '#2563eb';
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#1f2937';
+                    ctx.font = 'bold 11px Fredoka One';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(`${p.label || ''} (${p.x}, ${p.y})`, cx + 8, cy - 4);
+
+                    if (p.emoji) {
+                        ctx.font = '18px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(p.emoji, cx, cy - 12);
+                    }
+                });
+            }
+        }
+
+        function generateProblem(mission) {
+            const theme = culinaryThemes[Math.floor(Math.random() * culinaryThemes.length)];
+            let problem = { theme: theme, mission: mission };
+
+            if (mission === 1) {
+                let x1 = Math.floor(Math.random() * 6) - 3;
+                let y1 = Math.floor(Math.random() * 6) - 3;
+                let dx = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
+                let dy = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 4) + 1);
+                let x2 = x1 + dx;
+                let y2 = y1 + dy;
+
+                let mNum = y2 - y1;
+                let mDen = x2 - x1;
+
+                function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+                let common = gcd(Math.abs(mNum), Math.abs(mDen));
+                mNum /= common;
+                mDen /= common;
+                if (mDen < 0) { mNum = -mNum; mDen = -mDen; }
+
+                let correctAns = mDen === 1 ? `${mNum}` : `${mNum}/${mDen}`;
+                if (mNum === 0) correctAns = "0";
+
+                problem.story = `Kurir mengantar ${theme.name} ${theme.emoji} dari titik A(${x1}, ${y1}) ke titik B(${x2}, ${y2}). Berapakah nilai gradien (kemiringan) m jalan ini?`;
+                problem.points = [
+                    { x: x1, y: y1, label: 'A', color: '#3b82f6', emoji: '🛵' },
+                    { x: x2, y: y2, label: 'B', color: '#ef4444', emoji: theme.emoji }
+                ];
+                problem.customLine = { m: (y2 - y1) / (x2 - x1), c: y1 - ((y2 - y1) / (x2 - x1)) * x1 };
+                problem.correctAnswer = correctAns;
+                problem.explanation = `Gradien m = (y₂ - y₁) / (x₂ - x₁) = (${y2} - ${y1}) / (${x2} - ${x1}) = ${correctAns}`;
+
+                let options = [correctAns];
+                while(options.length < 4) {
+                    let randNum = mNum + (Math.floor(Math.random() * 5) - 2);
+                    let opt = mDen === 1 ? `${randNum}` : `${randNum}/${mDen}`;
+                    if(!options.includes(opt)) options.push(opt);
+                }
+                options.sort(() => Math.random() - 0.5);
+                problem.options = options;
+
+            } else if (mission === 2) {
+                let m = Math.floor(Math.random() * 5) - 2;
+                if (m === 0) m = 1;
+                let px = Math.floor(Math.random() * 5) - 2;
+                let py = Math.floor(Math.random() * 5) - 2;
+                let c = py - m * px;
+
+                let cStr = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+                let mStr = m === 1 ? '' : (m === -1 ? '-' : `${m}`);
+                let correctEq = `y = ${mStr}x ${cStr}`;
+                if (c === 0) correctEq = `y = ${mStr}x`;
+
+                problem.story = `Kurir ${theme.name} ${theme.emoji} melewati posko (${px}, ${py}) dengan kemiringan m = ${m}. Manakah persamaan garis lurus jalurnya?`;
+                problem.points = [{ x: px, y: py, label: 'Posko', color: '#3b82f6', emoji: '🛵' }];
+                problem.customLine = { m: m, c: c };
+                problem.correctAnswer = correctEq;
+                problem.explanation = `Rumus y - y₁ = m(x - x₁), sehingga didapatkan ${correctEq}`;
+
+                let options = [correctEq];
+                while(options.length < 4) {
+                    let randC = c + (Math.floor(Math.random() * 6) - 3);
+                    let randCStr = randC >= 0 ? `+ ${randC}` : `- ${Math.abs(randC)}`;
+                    let opt = `y = ${mStr}x ${randCStr}`;
+                    if(!options.includes(opt)) options.push(opt);
+                }
+                options.sort(() => Math.random() - 0.5);
+                problem.options = options;
+
+            } else if (mission === 3) {
+                let isParallel = Math.random() > 0.5;
+                let baseM = Math.floor(Math.random() * 4) - 2;
+                if (baseM === 0) baseM = 2;
+
+                let targetM = isParallel ? baseM : -1 / baseM;
+                let px = Math.floor(Math.random() * 4) - 2;
+                let py = Math.floor(Math.random() * 4) - 2;
+
+                let relationText = isParallel ? "sejajar" : "tegak lurus";
+                problem.story = `Jalur Jembatan Ampera memiliki gradien m = ${baseM}. Jalur kurir ${theme.name} ${theme.emoji} harus ${relationText} dengan jalur utama. Berapakah gradien m jalur kurir?`;
+
+                let correctAns = isParallel ? `${baseM}` : (baseM === 2 ? "-1/2" : (baseM === -2 ? "1/2" : (baseM === 1 ? "-1" : "1")));
+                problem.points = [{ x: px, y: py, label: 'Titik Kurir', color: '#10b981', emoji: '🛵' }];
+                problem.customLine = { m: targetM, c: py - targetM * px };
+                problem.correctAnswer = correctAns;
+                problem.explanation = isParallel ? `Garis sejajar: m₂ = m₁ = ${baseM}` : `Garis tegak lurus: m₁ × m₂ = -1, maka m₂ = ${correctAns}`;
+
+                let options = [correctAns, `${baseM}`, `-1`, `1`].filter((v, i, a) => a.indexOf(v) === i);
+                while(options.length < 4) {
+                    options.push(`${Math.floor(Math.random() * 5) - 2}`);
+                    options = options.filter((v, i, a) => a.indexOf(v) === i);
+                }
+                options.sort(() => Math.random() - 0.5);
+                problem.options = options;
+
+            } else {
+                let x1 = Math.floor(Math.random() * 4) - 2;
+                let y1 = Math.floor(Math.random() * 4) - 2;
+                let x2 = x1 + 2;
+                let y2 = y1 + (Math.random() > 0.5 ? 2 : -2);
+
+                let m = (y2 - y1) / (x2 - x1);
+                let c = y1 - m * x1;
+
+                let cStr = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+                let mStr = m === 1 ? '' : (m === -1 ? '-' : `${m}`);
+                let correctEq = `y = ${mStr}x ${cStr}`;
+                if (c === 0) correctEq = `y = ${mStr}x`;
+
+                problem.story = `Tantangan Boss! Tentukan persamaan garis yang menghubungkan titik (${x1}, ${y1}) dan (${x2}, ${y2}) untuk pengiriman ${theme.name} ${theme.emoji}!`;
+                problem.points = [
+                    { x: x1, y: y1, label: 'A', color: '#8b5cf6', emoji: '🛵' },
+                    { x: x2, y: y2, label: 'B', color: '#ec4899', emoji: theme.emoji }
+                ];
+                problem.customLine = { m: m, c: c };
+                problem.correctAnswer = correctEq;
+                problem.explanation = `Hitung m = (${y2}-${y1})/(${x2}-${x1}) = ${m}. Lalu disubstitusi menjadi ${correctEq}`;
+
+                let options = [correctEq];
+                while(options.length < 4) {
+                    let randC = c + (Math.floor(Math.random() * 4) - 2);
+                    let randCStr = randC >= 0 ? `+ ${randC}` : `- ${Math.abs(randC)}`;
+                    let opt = `y = ${mStr}x ${randCStr}`;
+                    if(!options.includes(opt)) options.push(opt);
+                }
+                options.sort(() => Math.random() - 0.5);
+                problem.options = options;
+            }
+
+            return problem;
+        }
+
+        function openNamePrompt(missionNum) {
+            currentMission = missionNum;
+            document.getElementById('modal-player').classList.remove('hidden');
+            document.getElementById('modal-player').classList.add('flex');
+        }
+
+        function confirmStartMission() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            const classInput = document.getElementById('player-class').value.trim();
+
+            if (!nameInput) {
+                showNotification("Nama Kosong", "Silakan isi Nama Siswa terlebih dahulu!", "✍️");
+                return;
+            }
+
+            playerName = nameInput;
+            playerClass = classInput || "IX";
+
+            document.getElementById('modal-player').classList.add('hidden');
+            document.getElementById('modal-player').classList.remove('flex');
+            
+            startMission(currentMission);
+        }
+
+        function startMission(missionNum) {
+            currentMission = missionNum;
+            questionIndex = 0;
+            currentScore = 0;
+            missionAnswers = [];
+
+            document.getElementById('score-display').innerText = currentScore;
+            document.getElementById('player-tag').innerText = `Siswa: ${playerName} (${playerClass})`;
+            
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-leaderboard').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('screen-game').classList.add('flex');
+
+            document.getElementById('mission-badge').innerText = `Misi ${missionNum}`;
+            
+            loadNextProblem();
+            setTimeout(resizeCanvas, 50);
+        }
+
+        function goHome() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('flex');
+            document.getElementById('screen-leaderboard').classList.add('hidden');
+            document.getElementById('screen-menu').classList.remove('hidden');
+        }
+
+        function loadNextProblem() {
+            if (questionIndex >= totalQuestionsPerMission) {
+                saveScoreToLeaderboard();
+                showFinalSummary();
+                return;
+            }
+
+            currentProblemData = generateProblem(currentMission);
+
+            document.getElementById('food-icon').innerText = currentProblemData.theme.emoji;
+            document.getElementById('problem-subtitle').innerText = currentProblemData.theme.name;
+            document.getElementById('story-text').innerText = currentProblemData.story;
+            document.getElementById('progress-indicator').innerText = `Soal ${questionIndex + 1} dari ${totalQuestionsPerMission}`;
+
+            let controlHTML = '<div class="grid grid-cols-2 gap-3">';
+            currentProblemData.options.forEach((opt) => {
+                controlHTML += `
+                    <label class="btn-game flex items-center gap-3 p-3 bg-white border-2 border-amber-200 rounded-xl cursor-pointer hover:border-amber-500 transition">
+                        <input type="radio" name="math-ans" value="${opt}" class="w-4 h-4 text-amber-600 focus:ring-amber-500">
+                        <span class="font-heading text-base md:text-lg text-gray-800">${opt}</span>
+                    </label>
+                `;
+            });
+            controlHTML += '</div>';
+            document.getElementById('control-area').innerHTML = controlHTML;
+
+            drawCartesianPlane(currentProblemData.customLine, currentProblemData.points);
+        }
+
+        function checkAnswer() {
+            const selected = document.querySelector('input[name="math-ans"]:checked');
+            if (!selected) {
+                showNotification("Belum Memilih", "Pilih salah satu jawaban terlebih dahulu!", "📌");
+                return;
+            }
+
+            const userAnswer = selected.value;
+            const isCorrect = userAnswer === currentProblemData.correctAnswer;
+
+            if (isCorrect) {
+                currentScore += 20;
+                document.getElementById('score-display').innerText = currentScore;
+            }
+
+            missionAnswers.push({
+                questionNum: questionIndex + 1,
+                story: currentProblemData.story,
+                userAnswer: userAnswer,
+                correctAnswer: currentProblemData.correctAnswer,
+                isCorrect: isCorrect,
+                explanation: currentProblemData.explanation
+            });
+
+            questionIndex++;
+            loadNextProblem();
+        }
+
+        function showFinalSummary() {
+            document.getElementById('summary-name').innerText = `${playerName} (${playerClass})`;
+            document.getElementById('summary-score').innerText = currentScore;
+
+            let detailsHTML = '';
+            missionAnswers.forEach((item) => {
+                const statusBadge = item.isCorrect ? 
+                    `<span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Benar (+20)</span>` : 
+                    `<span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded">Salah</span>`;
+                
+                detailsHTML += `
+                    <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold">Soal #${item.questionNum}</span>
+                            ${statusBadge}
+                        </div>
+                        <p class="text-gray-600 mb-1">Jawaban Kamu: <b>${item.userAnswer}</b> ${!item.isCorrect ? `(Kunci: ${item.correctAnswer})` : ''}</p>
+                        <p class="text-gray-500 italic text-[11px]">${item.explanation}</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('summary-details').innerHTML = detailsHTML;
+            document.getElementById('modal-summary').classList.remove('hidden');
+            document.getElementById('modal-summary').classList.add('flex');
+        }
+
+        function getLeaderboardData() {
+            try {
+                const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveScoreToLeaderboard() {
+            const records = getLeaderboardData();
+            records.push({
+                name: playerName,
+                classStr: playerClass,
+                mission: `Misi ${currentMission}`,
+                score: currentScore,
+                date: new Date().toLocaleDateString('id-ID')
+            });
+
+            records.sort((a, b) => b.score - a.score);
+
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
+            } catch(e) {
+                console.error("Failed to save score", e);
+            }
+        }
+
+        function showLeaderboard() {
+            document.getElementById('modal-summary').classList.add('hidden');
+            document.getElementById('modal-summary').classList.remove('flex');
+            
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-leaderboard').classList.remove('hidden');
+            document.getElementById('screen-leaderboard').classList.add('flex');
+
+            const records = getLeaderboardData();
+            const tbody = document.getElementById('leaderboard-body');
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">Belum ada data nilai siswa. Selesaikan misi untuk mencatatkan nilai!</td></tr>`;
+                return;
+            }
+
+            let rows = '';
+            records.forEach((rec, idx) => {
+                rows += `
+                    <tr class="border-b hover:bg-amber-50">
+                        <td class="px-4 py-3 font-bold">${idx + 1}</td>
+                        <td class="px-4 py-3 font-semibold">${rec.name}</td>
+                        <td class="px-4 py-3 text-gray-600">${rec.classStr}</td>
+                        <td class="px-4 py-3 text-gray-600">${rec.mission}</td>
+                        <td class="px-4 py-3 text-gray-500 text-xs">${rec.date || '-'}</td>
+                        <td class="px-4 py-3 text-right font-heading text-base ${rec.score >= 75 ? 'text-emerald-600' : 'text-amber-600'}">${rec.score}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function exportToCSV() {
+            const records = getLeaderboardData();
+            if (records.length === 0) {
+                showNotification("Data Kosong", "Belum ada data rekap nilai untuk diekspor!", "📊");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,No,Nama Siswa,Kelas,Misi,Tanggal,Skor Nilai\n";
+            records.forEach((rec, index) => {
+                csvContent += `${index + 1},"${rec.name}","${rec.classStr}","${rec.mission}","${rec.date || ''}",${rec.score}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Nilai_Matematika_Persamaan_Garis_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function promptClearLeaderboard() {
+            document.getElementById('teacher-pin-input').value = '';
+            document.getElementById('modal-teacher-pass').classList.remove('hidden');
+            document.getElementById('modal-teacher-pass').classList.add('flex');
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('modal-teacher-pass').classList.add('hidden');
+            document.getElementById('modal-teacher-pass').classList.remove('flex');
+        }
+
+        function verifyTeacherPin() {
+            const pin = document.getElementById('teacher-pin-input').value.trim();
+            if (pin === TEACHER_PIN) {
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
+                closeTeacherModal();
+                showLeaderboard();
+                showNotification("Berhasil", "Data rekap nilai siswa telah berhasil dibersihkan!", "✅");
+            } else {
+                showNotification("PIN Salah", "PIN Guru yang Anda masukkan salah!", "🔒");
+            }
+        }
+
+        window.onload = function() {
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>
